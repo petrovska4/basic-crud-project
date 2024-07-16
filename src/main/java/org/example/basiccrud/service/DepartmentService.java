@@ -13,5 +13,5 @@ public interface DepartmentService {
     public DepartmentDto createDepartment(DepartmentDto departmentDto);
     public DepartmentDto updateDepartment(UUID id, DepartmentDto departmentDto);
     public DepartmentDto getByDepartmentName(String departmentName);
-    public abstract void deleteDepartment(UUID id);
+    public void deleteDepartment(UUID id);
 }

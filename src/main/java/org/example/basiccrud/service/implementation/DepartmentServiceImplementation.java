@@ -17,16 +17,16 @@ import java.util.UUID;
 @Service
 public class DepartmentServiceImplementation implements DepartmentService {
     DepartmentRepository departmentRepository;
-    LocationRepository locationRepository;
 
     @Autowired
     public DepartmentServiceImplementation(DepartmentRepository departmentRepository) {
         this.departmentRepository = departmentRepository;
-        this.locationRepository = locationRepository;
     }
 
     @Override
     public DepartmentDto getDepartmentById(UUID id) {
+        Preconditions.checkArgument(id != null, "You can't send null id");
+
         Department department = departmentRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Department not found"));
         return DepartmentMapper.INSTANCE.mapToDepartmentDto(department);
@@ -39,30 +39,39 @@ public class DepartmentServiceImplementation implements DepartmentService {
 
     @Override
     public DepartmentDto createDepartment(DepartmentDto departmentDto) {
-        Preconditions.checkArgument(departmentDto.getId() == null, "You cant send id");
+        Preconditions.checkArgument(departmentDto.getId() == null, "You can't send id");
+        Preconditions.checkArgument(departmentDto.getName() != null, "You can't create department without name");
+
         departmentRepository.save(DepartmentMapper.INSTANCE.mapToDepartment(departmentDto));
+
         return departmentDto;
     }
 
     @Override
     public DepartmentDto updateDepartment(UUID id, DepartmentDto departmentDto) {
-        Preconditions.checkArgument(departmentDto.getId() == null, "You cant send id");
+        Preconditions.checkArgument(id != null, "You can't send null id");
+        Preconditions.checkArgument(departmentDto.getId() == null, "You can't send id");
+        Preconditions.checkArgument(departmentDto.getName() != null, "You can't update department without name");
+
         Department department =  departmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Department not found"));
 
         department.setName(departmentDto.getName());
 
         departmentRepository.save(department);
-        return departmentDto;
+        return DepartmentMapper.INSTANCE.mapToDepartmentDto(department);
     }
 
     @Override
     public DepartmentDto getByDepartmentName(String departmentName) {
-        Department department = departmentRepository.findByName(departmentName);
+        Preconditions.checkArgument(departmentName != null, "You can't search without a name");
+        Department department = departmentRepository.findByName(departmentName).orElseThrow(() -> new ResourceNotFoundException("Department not found"));
         return DepartmentMapper.INSTANCE.mapToDepartmentDto(department);
     }
 
     @Override
     public void deleteDepartment(UUID id) {
+        Preconditions.checkArgument(id != null, "You can't delete department without id");
+        departmentRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Department not found"));
         departmentRepository.deleteById(id);
     }
 

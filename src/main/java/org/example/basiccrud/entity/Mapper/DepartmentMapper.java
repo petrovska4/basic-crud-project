@@ -15,7 +15,7 @@ public interface DepartmentMapper {
 
     DepartmentMapper INSTANCE = Mappers.getMapper(DepartmentMapper.class);
 
-    @Mapping(source = "id", target = "uuid", qualifiedByName = "mapIdToUuid")
+    @Mapping(target = "uuid", ignore = true)
     Department mapToDepartment(DepartmentDto departmentDto);
 
     @Mapping(source = "uuid", target = "id", qualifiedByName = "mapUuidToId")
